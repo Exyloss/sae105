@@ -6,20 +6,46 @@ import urllib
 import requests
 import json
 from time import sleep
+import httpagentparser as ap
 
 def log_parser(file: str) -> list:
     lines = open(file, 'r').readlines()
-    tab = [["Adresse IP", "Date", "Code HTTP", "Système d'exploitation"]]
+    # Nom des colonnes pour exporter le tableau
+    tab = [["Adresse IP", "Date", "Code HTTP", "Système d'exploitation", "Navigateur"]]
     for line in lines:
         ip = line.split(" ")[0]
+        # Première valeur entre crochets
         date = re.findall(r"\[.*?\]", line)[0]
+        # On récupère le premier nombre à trois chiffres de la ligne
         exit_code = re.findall(" [0-9]{3} ", line)[0][1:-1]
+        # Dernière valeur entre double quillemets
+        user_agent = re.findall('".*?"', line)[-1]
+        browser = str(get_browser(line))#+":"+ap.simple_detect(user_agent)[1]
         try:
             systeme = re.findall("\(.*?\)", line)[0]
         except:
-            systeme = "unknow"
-        tab.append([ip, date, exit_code, systeme])
+            systeme = "Unknown OS"
+        tab.append([ip, date, exit_code, systeme, browser])
     return tab
+
+def get_browser(line):
+    user_agent = re.findall('".*?"', line)[-1]
+    # ~~ Les joies de Python ~~ #
+    if "bot" in user_agent:
+        return "Robot"
+    elif "Edge/" in user_agent:
+        browser = "Edge"
+    elif "Firefox/" in user_agent:
+        browser = "Firefox"
+    elif "Chrome/" in user_agent:
+        browser = "Chrome"
+    elif "Safari/" in user_agent:
+        browser = "Safari"
+    elif "Opera/" in user_agent:
+        browser = "Opera"
+    else:
+        return "Unknown Browser"
+    return re.findall(browser+'\/.*?(?:"| )', user_agent)[0][:-1]
 
 def re_parse_http(filename: str) -> dict:
     dic = {}
@@ -40,27 +66,6 @@ def parse_http(file: str):
     for i in tab:
         dic[i[-4]] = dic.get(i[-4], 0)+1
     return dic
-
-def parse_browser(file: str):
-    tab = log_parser(file)
-    browsers = {}
-    for line in tab:
-        agent = line[-1].split(" ")[-1]
-        if "bot" in agent:
-            agent = "bot"
-        elif "Firefox" in agent:
-            agent = "Firefox"
-        elif "Google" in agent:
-            agent = "Chrome"
-        elif "Edg" in agent:
-            agent = "Edge"
-        elif "Safari" in agent:
-            agent = "Safari"
-        else:
-            agent = "Autre"
-
-        browsers[agent] = browsers.get(agent, 0)+1
-    return browsers
 
 def parse_os(file: str):
     tab = log_parser(file)
@@ -128,6 +133,8 @@ print(values)
 """
 
 #print(len(list_ip("apache.log")))
+
+#print(get_browser('20.203.142.208 - - [09/Nov/2021:12:05:51 +0100] "GET /en/index.php?controller=\"><script%20>alert(String.fromCharCode(88,83,83))</script> HTTP/1.1" 301 4932 "https://controltower.fr/en/index.php?controller=\"><script >alert(String.fromCharCode(88,83,83))</script>" "Mozilla/5.0 (Windows NT 10.0; WOW64; Rv:50.0) Gecko/20100101 Firefox/50.0"'))
 
 exportToCSVFile(log_parser("apache.log"), "out.csv")
 
