@@ -7,14 +7,17 @@ import requests
 import json
 from time import sleep
 
-def log_parser():
-    lines = open('apache2.log', 'r').readlines()
+def log_parser(fichier: str) -> list:
+    lines = open(fichier, 'r').readlines()
     tab = []
     for row in csv.reader(lines, delimiter=" "):
         tab.append(row)
     return tab
 
-def re_parse_http(filename):
+def re_parse_http(filename: str) -> dict:
+    """
+    fonction listant le nombre de code de sortie http en fonction de leur valeur
+    """
     dic = {}
     log = open(filename, 'r').read()
     exit_code = re.findall(" [0-9]{3} ", log)
@@ -66,7 +69,7 @@ def parse_os():
             continue
     return systemes
 
-def getIP_infos(ip):
+def getIP_infos(ip: str) -> dict:
     url = "http://ip-api.com/json/"
     response = urllib.request.urlopen(url + ip)
     data = response.read()
@@ -79,7 +82,7 @@ def getIP_infos(ip):
         "region": values['region'],
         "timezone": values['timezone']}
 
-def exportToCSVFile(liste, fichier):
+def exportToCSVFile(liste: list, fichier: str) -> bool:
     try:
         with open(fichier, 'w') as f:
             writer = csv.writer(f, delimiter=',')
@@ -89,7 +92,12 @@ def exportToCSVFile(liste, fichier):
     except:
         return False
 
-def list_ip(file):
+def list_ip(file: str) -> list:
+    """
+    Fonction listant les adresses ip sans les doublons
+    file: chaine de caractere (nom du fichier de log)
+    listip: tableau des ip contenues dans file
+    """
     listip = []
     f = open(file, "r")
     for ligne in f :
@@ -98,7 +106,7 @@ def list_ip(file):
             listip.append(a)
     return listip
 
-def ip_coord(tab, n):
+def ip_coord(tab: list, n: int) -> list:
     url = "http://ip-api.com/json/"
     coords = []
     for i in range(n):
