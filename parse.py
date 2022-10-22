@@ -61,24 +61,6 @@ def re_parse_date(filename):
     date = re.findall(r"\[.*?\]", log)
     return date
 
-def parse_http(file: str):
-    tab = log_parser(file)
-    dic = {}
-    for i in tab:
-        dic[i[-4]] = dic.get(i[-4], 0)+1
-    return dic
-
-def parse_os(file: str):
-    tab = log_parser(file)
-    systemes = []
-    for line in tab:
-        try:
-            agent = line[-1]
-            systemes.append(re.findall("\(.*?\)", agent)[0])
-        except:
-            continue
-    return systemes
-
 def getIP_infos(ip):
     url = "http://ip-api.com/json/"
     response = urllib.request.urlopen(url + ip)
@@ -104,14 +86,14 @@ def list_ip(file):
 
 def ip_coord(tab, n):
     url = "http://ip-api.com/json/"
-    coords = []
+    coords = {}
     for i in range(n):
-        response = urllib.request.urlopen(url + tab[i])
+        ip = tab[i]
+        response = urllib.request.urlopen(url + ip)
         data = response.read()
         values = json.loads(data)
-        coords.append([values['lat'], values['lon']])
-        print("i:",i)
-        sleep(0.5)
+        coords[ip] = [values['lat'], values['lon']]
+        sleep(1)
     exportToCSVFile(coords, "ip.csv")
     return coords
 
