@@ -7,6 +7,7 @@ import requests
 import json
 from time import sleep
 import httpagentparser as ap
+from export_file import *
 
 def log_parser(file: str) -> list:
     lines = open(file, 'r').readlines()
@@ -19,7 +20,7 @@ def log_parser(file: str) -> list:
         # On récupère le premier nombre à trois chiffres de la ligne
         exit_code = re.findall(" [0-9]{3} ", line)[0][1:-1]
         # Dernière valeur entre double quillemets
-        user_agent = re.findall('".*?"', line)[-1]
+        #user_agent = re.findall('".*?"', line)[-1]
         browser = str(get_browser(line))#+":"+ap.simple_detect(user_agent)[1]
         try:
             systeme = re.findall("\(.*?\)", line)[0]
@@ -91,15 +92,6 @@ def getIP_infos(ip):
         "region": values['region'],
         "timezone": values['timezone']}
 
-def exportToCSVFile(liste, fichier):
-    try:
-        with open(fichier, 'w') as f:
-            writer = csv.writer(f, delimiter=',')
-            for line in liste:
-                writer.writerow(line)
-        return True
-    except:
-        return False
 
 def list_ip(file):
     listip = []
