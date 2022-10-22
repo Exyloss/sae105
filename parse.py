@@ -7,17 +7,21 @@ import requests
 import json
 from time import sleep
 
-def log_parser(fichier: str) -> list:
-    lines = open(fichier, 'r').readlines()
-    tab = []
-    for row in csv.reader(lines, delimiter=" "):
-        tab.append(row)
+def log_parser(file: str) -> list:
+    lines = open(file, 'r').readlines()
+    tab = [["Adresse IP", "Date", "Code HTTP", "Système d'exploitation"]]
+    for line in lines:
+        ip = line.split(" ")[0]
+        date = re.findall(r"\[.*?\]", line)[0]
+        exit_code = re.findall(" [0-9]{3} ", line)[0][1:-1]
+        try:
+            systeme = re.findall("\(.*?\)", line)[0]
+        except:
+            systeme = "unknow"
+        tab.append([ip, date, exit_code, systeme])
     return tab
 
 def re_parse_http(filename: str) -> dict:
-    """
-    fonction listant le nombre de code de sortie http en fonction de leur valeur
-    """
     dic = {}
     log = open(filename, 'r').read()
     exit_code = re.findall(" [0-9]{3} ", log)
@@ -30,15 +34,15 @@ def re_parse_date(filename):
     date = re.findall(r"\[.*?\]", log)
     return date
 
-def parse_http():
-    tab = log_parser()
+def parse_http(file: str):
+    tab = log_parser(file)
     dic = {}
     for i in tab:
         dic[i[-4]] = dic.get(i[-4], 0)+1
     return dic
 
-def parse_browser():
-    tab = log_parser()
+def parse_browser(file: str):
+    tab = log_parser(file)
     browsers = {}
     for line in tab:
         agent = line[-1].split(" ")[-1]
@@ -58,18 +62,18 @@ def parse_browser():
         browsers[agent] = browsers.get(agent, 0)+1
     return browsers
 
-def parse_os():
-    tab = log_parser()
-    systemes = {}
+def parse_os(file: str):
+    tab = log_parser(file)
+    systemes = []
     for line in tab:
         try:
-            agent = line[-1][line[-1].index("(") + 1:line[-1].index(")")]
-            systemes[agent] = systemes.get(agent, 0)+1
+            agent = line[-1]
+            systemes.append(re.findall("\(.*?\)", agent)[0])
         except:
             continue
     return systemes
 
-def getIP_infos(ip: str) -> dict:
+def getIP_infos(ip):
     url = "http://ip-api.com/json/"
     response = urllib.request.urlopen(url + ip)
     data = response.read()
@@ -82,7 +86,7 @@ def getIP_infos(ip: str) -> dict:
         "region": values['region'],
         "timezone": values['timezone']}
 
-def exportToCSVFile(liste: list, fichier: str) -> bool:
+def exportToCSVFile(liste, fichier):
     try:
         with open(fichier, 'w') as f:
             writer = csv.writer(f, delimiter=',')
@@ -92,12 +96,7 @@ def exportToCSVFile(liste: list, fichier: str) -> bool:
     except:
         return False
 
-def list_ip(file: str) -> list:
-    """
-    Fonction listant les adresses ip sans les doublons
-    file: chaine de caractere (nom du fichier de log)
-    listip: tableau des ip contenues dans file
-    """
+def list_ip(file):
     listip = []
     f = open(file, "r")
     for ligne in f :
@@ -106,7 +105,7 @@ def list_ip(file: str) -> list:
             listip.append(a)
     return listip
 
-def ip_coord(tab: list, n: int) -> list:
+def ip_coord(tab, n):
     url = "http://ip-api.com/json/"
     coords = []
     for i in range(n):
@@ -128,11 +127,13 @@ values = json.loads(data)
 print(values)
 """
 
-print(len(list_ip("apache.log")))
+#print(len(list_ip("apache.log")))
+
+exportToCSVFile(log_parser("apache.log"), "out.csv")
 
 #print(parse_os())
 #print(parse_browser())
-#ips = list_ip("apache2.log")
+#ips = list_ip("apache.log")
 #ip_coord(ips, 50)
 #print(re_parse_date("apache.log"))
 #print(getIP_infos("66.249.66.75"))
