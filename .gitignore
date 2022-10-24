@@ -1,3 +1,5 @@
 *.csv
 *.log
 *.html
+*.json
+*.xml
