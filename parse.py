@@ -12,7 +12,7 @@ from export_file import *
 def log_parser(file: str) -> list:
     lines = open(file, 'r').readlines()
     # Nom des colonnes pour exporter le tableau
-    tab = [["Adresse IP", "Date", "Code HTTP", "Système d'exploitation", "Navigateur"]]
+    tab = []
     for line in lines:
         ip = line.split(" ")[0]
         # Première valeur entre crochets
@@ -20,13 +20,12 @@ def log_parser(file: str) -> list:
         # On récupère le premier nombre à trois chiffres de la ligne
         exit_code = re.findall(" [0-9]{3} ", line)[0][1:-1]
         # Dernière valeur entre double quillemets
-        #user_agent = re.findall('".*?"', line)[-1]
-        browser = str(get_browser(line))#+":"+ap.simple_detect(user_agent)[1]
+        browser = get_browser(line)
         try:
             systeme = re.findall("\(.*?\)", line)[0]
         except:
             systeme = "Unknown OS"
-        tab.append([ip, date, exit_code, systeme, browser])
+        tab.append({"ip": ip, "date": date, "http": exit_code, "system": systeme, "browser": browser})
     return tab
 
 def get_browser(line):
@@ -48,19 +47,6 @@ def get_browser(line):
         return "Unknown Browser"
     return re.findall(browser+'\/.*?(?:"| )', user_agent)[0][:-1]
 
-def re_parse_http(filename: str) -> dict:
-    dic = {}
-    log = open(filename, 'r').read()
-    exit_code = re.findall(" [0-9]{3} ", log)
-    for i in exit_code:
-        dic[i[1:-1]] = dic.get(i[1:-1], 0)+1
-    return dic
-
-def re_parse_date(filename):
-    log = open('apache.log', 'r').read()
-    date = re.findall(r"\[.*?\]", log)
-    return date
-
 def getIP_infos(ip):
     url = "http://ip-api.com/json/"
     response = urllib.request.urlopen(url + ip)
@@ -74,7 +60,6 @@ def getIP_infos(ip):
         "region": values['region'],
         "timezone": values['timezone']}
 
-
 def list_ip(file):
     listip = []
     f = open(file, "r")
@@ -84,17 +69,18 @@ def list_ip(file):
             listip.append(a)
     return listip
 
-def ip_coord(tab, n):
+def ip_coord(tab, a, b):
     url = "http://ip-api.com/json/"
-    coords = {}
-    for i in range(n):
+    coords = []
+    for i in range(a, b):
         ip = tab[i]
         response = urllib.request.urlopen(url + ip)
         data = response.read()
         values = json.loads(data)
-        coords[ip] = [values['lat'], values['lon']]
-        sleep(1)
-    exportToCSVFile(coords, "ip.csv")
+        print(i)
+        coords.append([ip, values['lat'], values['lon']])
+        sleep(1.5)
+    exportToCSVFile(coords, "ip.csv", "a")
     return coords
 
 
@@ -108,9 +94,10 @@ print(values)
 
 #print(len(list_ip("apache.log")))
 
-#print(get_browser('20.203.142.208 - - [09/Nov/2021:12:05:51 +0100] "GET /en/index.php?controller=\"><script%20>alert(String.fromCharCode(88,83,83))</script> HTTP/1.1" 301 4932 "https://controltower.fr/en/index.php?controller=\"><script >alert(String.fromCharCode(88,83,83))</script>" "Mozilla/5.0 (Windows NT 10.0; WOW64; Rv:50.0) Gecko/20100101 Firefox/50.0"'))
+#exportToCSVFile(log_parser("apache.log"), "out.csv", "w")
+#exportToJSONFile(log_parser("apache.log"), "out.json")
 
-exportToCSVFile(log_parser("apache.log"), "out.csv")
+#ip_coord(list_ip("apache.log"), 300, 400)
 
 #print(parse_os())
 #print(parse_browser())

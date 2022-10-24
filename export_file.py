@@ -1,13 +1,33 @@
 import json
 import csv
-import xml
 
-def exportToCSVFile(liste: list, fichier: str) -> bool:
+def exportToCSVFile(liste: list, fichier: str, mode: str) -> bool:
     try:
-        with open(fichier, 'w') as f:
+        with open(fichier, mode) as f:
             writer = csv.writer(f, delimiter=',')
+            writer.writerow(liste[0].keys())
             for line in liste:
-                writer.writerow(line)
+                writer.writerow(line.values())
+                print(line)
+        return True
+    except:
+        return False
+
+def exportToJSONFile(liste: list, fichier: str) -> bool:
+    try:
+        with open(fichier, "w") as f:
+            f.write("[\n")
+            for item in liste:
+                json.dump(item, f)
+                f.write(',\n')
+            f.write(']')
+        return True
+    except:
+        return False
+
+def exportToXMLFile(liste: list, fichier: str) -> bool:
+    try:
+        ...
         return True
     except:
         return False
