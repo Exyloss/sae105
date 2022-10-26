@@ -25,7 +25,7 @@ def log_parser(file: str) -> list:
             systeme = re.findall("\(.*?\)", line)[0]
         except:
             systeme = "Unknown OS"
-        tab.append({"ip": ip, "date": date, "http": exit_code, "system": systeme, "browser": browser})
+        tab.append([ip,date, exit_code, systeme, browser])
     return tab
 
 def get_browser(line):
@@ -47,18 +47,12 @@ def get_browser(line):
         return "Unknown Browser"
     return re.findall(browser+'\/.*?(?:"| )', user_agent)[0][:-1]
 
-def getIP_infos(ip):
+def getIP_infos(ip: str) -> dict:
     url = "http://ip-api.com/json/"
     response = urllib.request.urlopen(url + ip)
     data = response.read()
     values = json.loads(data)
-    return {
-        "ip": values['query'],
-        "city": values['city'],
-        "isp": values['isp'],
-        "country": values['country'],
-        "region": values['region'],
-        "timezone": values['timezone']}
+    return values
 
 def list_ip(file):
     listip = []
@@ -74,12 +68,13 @@ def ip_coord(tab, a, b):
     coords = []
     for i in range(a, b):
         ip = tab[i]
-        response = urllib.request.urlopen(url + ip)
-        data = response.read()
-        values = json.loads(data)
-        print(i)
-        coords.append([ip, values['lat'], values['lon']])
-        sleep(1.5)
+        infos = getIP_infos(ip)
+        if infos['status'] == 'success':
+            coords.append((ip, infos['lat'], infos['lon']))
+            print(i)
+            sleep(1.5)
+        else:
+            print("erreur")
     exportToCSVFile(coords, "ip.csv", "a")
     return coords
 
@@ -97,7 +92,8 @@ print(values)
 #exportToCSVFile(log_parser("apache.log"), "out.csv", "w")
 #exportToJSONFile(log_parser("apache.log"), "out.json")
 
-#ip_coord(list_ip("apache.log"), 300, 400)
+ip = list_ip("apache.log")
+ip_coord(ip, 4000, len(ip))
 
 #print(parse_os())
 #print(parse_browser())

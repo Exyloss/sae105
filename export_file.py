@@ -5,10 +5,8 @@ def exportToCSVFile(liste: list, fichier: str, mode: str) -> bool:
     try:
         with open(fichier, mode) as f:
             writer = csv.writer(f, delimiter=',')
-            writer.writerow(liste[0].keys())
             for line in liste:
-                writer.writerow(line.values())
-                print(line)
+                writer.writerow(line)
         return True
     except:
         return False
