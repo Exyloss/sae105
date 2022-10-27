@@ -12,16 +12,9 @@ def exportToCSVFile(liste: list, fichier: str, mode: str) -> bool:
         return False
 
 def exportToJSONFile(liste: list, fichier: str) -> bool:
-    try:
-        with open(fichier, "w") as f:
-            f.write("[\n")
-            for item in liste:
-                json.dump(item, f)
-                f.write(',\n')
-            f.write(']')
-        return True
-    except:
-        return False
+    with open(fichier, "w") as f:
+        f.write(json.dumps(liste, indent=4))
+    return True
 
 def exportToXMLFile(liste: list, fichier: str) -> bool:
     try:

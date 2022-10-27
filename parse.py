@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
-import csv
 import re
 import urllib
 import requests
 import json
 from time import sleep
-import httpagentparser as ap
 from export_file import *
 
 def log_parser(file: str) -> list:
@@ -25,7 +23,7 @@ def log_parser(file: str) -> list:
             systeme = re.findall("\(.*?\)", line)[0]
         except:
             systeme = "Unknown OS"
-        tab.append([ip,date, exit_code, systeme, browser])
+        tab.append([ip, date, exit_code, systeme, browser])
     return tab
 
 def get_browser(line):
@@ -49,8 +47,8 @@ def get_browser(line):
 
 def getIP_infos(ip: str) -> dict:
     url = "http://ip-api.com/json/"
-    response = urllib.request.urlopen(url + ip)
-    data = response.read()
+    response = requests.get(url+ip)
+    data = response.content
     values = json.loads(data)
     return values
 
@@ -70,7 +68,7 @@ def ip_coord(tab, a, b):
         ip = tab[i]
         infos = getIP_infos(ip)
         if infos['status'] == 'success':
-            coords.append((ip, infos['lat'], infos['lon']))
+            coords.append((infos['lat'], infos['lon']))
             print(i)
             sleep(1.5)
         else:
@@ -78,11 +76,30 @@ def ip_coord(tab, a, b):
     exportToCSVFile(coords, "ip.csv", "a")
     return coords
 
+def count_browser(fichier: str):
+    values = log_parser(fichier)
+    dic = {}
+    for line in values:
+        browser = line[-1].split("/")[0]
+        dic[browser] = dic.get(browser, 0)+1
+    return dic
+
+def count_os(fichier: str):
+    values = log_parser(fichier)
+    dic = {}
+    for line in values:
+        print(line[-2])
+
+#print(count_os("apache.log"))
+
+#print(getIP_infos("24.48.0.1"))
+
+#print(exportToJSONFile(count_browser("apache.log"), "browser.json"))
 
 #print(len(list_ip("apache.log")))
 
 #exportToCSVFile(log_parser("apache.log"), "out.csv", "w")
-exportToJSONFile(log_parser("apache.log"), "out.json")
+#exportToJSONFile(log_parser("apache.log"), "out.json")
 
 #ip = list_ip("apache.log")
 #exportToText(ip, "list_ip.txt")
@@ -94,5 +111,4 @@ exportToJSONFile(log_parser("apache.log"), "out.json")
 #ip_coord(ips, 50)
 #print(re_parse_date("apache.log"))
 #print(getIP_infos("66.249.66.75"))
-#print(re_parse_http('apache.log'))
 #exportToCSVFile(log_parser(), "out.csv")
