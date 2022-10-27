@@ -62,3 +62,29 @@ de la position de l'adresse IP renseignée.
 # 5. Création des statistiques
 
 # 6. Génération de la carte
+
+Afin de générer la carte des visiteurs, nous avons utilisé la librairie python «folium» :
+
+```bash
+pip install folium
+```
+
+Cette librairie a comme avantage d'être très simple d'utilisation. En effet, pour utiliser cette librairie, il faut
+instancier l'objet Map comme ceci :
+
+```python
+m = folium.Map(location=[50, 0], zoom_start=5)
+```
+
+Puis, pour placer des points, il faut instancier des objets Marker et appeller leur méthode add_to afin de les ajouter
+sur la carte :
+
+```python
+folium.Marker((lat, lon)).add_to(m)
+```
+
+Enfin, nous pouvons sauvegarder cette carte avec la méthode save de l'objet Map :
+
+```python
+m.save("index.html")
+```
