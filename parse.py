@@ -79,21 +79,14 @@ def ip_coord(tab, a, b):
     return coords
 
 
-"""
-url = "http://ip-api.com/json/66.249.66.75"
-response = urllib.request.urlopen(url)
-data = response.read()
-values = json.loads(data)
-print(values)
-"""
-
 #print(len(list_ip("apache.log")))
 
 #exportToCSVFile(log_parser("apache.log"), "out.csv", "w")
-#exportToJSONFile(log_parser("apache.log"), "out.json")
+exportToJSONFile(log_parser("apache.log"), "out.json")
 
-ip = list_ip("apache.log")
-ip_coord(ip, 4000, len(ip))
+#ip = list_ip("apache.log")
+#exportToText(ip, "list_ip.txt")
+#ip_coord(ip, 4000, len(ip))
 
 #print(parse_os())
 #print(parse_browser())

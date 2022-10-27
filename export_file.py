@@ -29,3 +29,12 @@ def exportToXMLFile(liste: list, fichier: str) -> bool:
         return True
     except:
         return False
+
+def exportToText(liste: list, fichier: str) -> bool:
+    try:
+        with open(fichier, "w") as f:
+            for line in liste:
+                f.write(str(line)+'\n')
+        return True
+    except:
+        return False
