@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import re
-import urllib
 import requests
 import json
 from time import sleep
