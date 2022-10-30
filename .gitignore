@@ -3,3 +3,4 @@
 *.json
 *.xml
 README.pdf
+__pycache__/*
