@@ -6,7 +6,7 @@ import json
 from time import sleep
 from export_file import *
 
-def log_parser(file: str) -> list:
+def parse(file: str, filter_bot: bool = False) -> list:
     lines = open(file, 'r').readlines()
     # Nom des colonnes pour exporter le tableau
     tab = []
@@ -22,13 +22,14 @@ def log_parser(file: str) -> list:
             systeme = re.findall("\(.*?\)", line)[0]
         except:
             systeme = "Unknown OS"
-        tab.append([ip, date, exit_code, systeme, browser])
+        if filter_bot == False or browser != "Robot":
+            tab.append([ip, date, exit_code, systeme, browser])
     return tab
 
-def get_browser(line):
+def get_browser(line) -> str:
     user_agent = re.findall('".*?"', line)[-1]
     # ~~ Les joies de Python ~~ #
-    if "bot" in user_agent:
+    if "bot" in user_agent or "Bot" in user_agent:
         return "Robot"
     elif "Edge/" in user_agent:
         browser = "Edge"
@@ -76,7 +77,7 @@ def ip_coord(tab, a, b):
     return coords
 
 def count_browser(fichier: str):
-    values = log_parser(fichier)
+    values = parse(fichier)
     dic = {}
     for line in values:
         browser = line[-1].split("/")[0]
@@ -84,30 +85,24 @@ def count_browser(fichier: str):
     return dic
 
 def count_os(fichier: str):
-    values = log_parser(fichier)
+    values = parse(fichier)
     dic = {}
     for line in values:
         print(line[-2])
 
-#print(count_os("apache.log"))
 
-#print(getIP_infos("24.48.0.1"))
+def get_data(liste: list, data: str) -> list:
+    data_dic = {"ip": 0, "date": 1, "http_code": 2, "browser": 4, "system": 3}
+    index = data_dic[data]
+    tab = []
+    for line in liste:
+        tab.append(line[index])
+    return tab
 
-#print(exportToJSONFile(count_browser("apache.log"), "browser.json"))
-
-#print(len(list_ip("apache.log")))
-
-#exportToCSVFile(log_parser("apache.log"), "out.csv", "w")
-#exportToJSONFile(log_parser("apache.log"), "out.json")
-
-#ip = list_ip("apache.log")
-#exportToText(ip, "list_ip.txt")
-#ip_coord(ip, 4000, len(ip))
-
-#print(parse_os())
-#print(parse_browser())
-#ips = list_ip("apache.log")
-#ip_coord(ips, 50)
-#print(re_parse_date("apache.log"))
-#print(getIP_infos("66.249.66.75"))
-#exportToCSVFile(log_parser(), "out.csv")
+def print_tab(liste: list) -> None:
+    is_tab = isinstance(liste[0], list)
+    for line in liste:
+        if is_tab:
+            print(" ".join(line))
+        else:
+            print(line)
