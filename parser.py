@@ -28,14 +28,18 @@ if args.output != None and args.type not in ["csv", "json", "xml"]:
     print("Erreur, le type de fichier "+args.type+" n'existe pas.")
     exit(1)
 
-if args.get not in ["ip", "date", "http_code", "browser", "system"] and args.get != None:
-    print("Erreur, la valeur "+args.get+" n'existe pas.")
-    exit(1)
+
+get_args = [i for i in args.get.split(",")]
+
+for arg in get_args:
+    if arg not in ["ip", "date", "http_code", "browser", "system"] and arg != None:
+        print("Erreur, la valeur "+args.get+" n'existe pas.")
+        exit(1)
 
 values = parse(args.log_file, args.filter, args.uniq)
 
 if args.get != None:
-    values_get = get_data(values, args.get)
+    values_get = get_data(values, get_args)
 else:
     values_get = values
 
@@ -48,4 +52,3 @@ else:
         exportToCSVFile(values_get, args.output)
     else:
         exportToXMLFile(values_get, args.output)
-

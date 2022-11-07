@@ -94,12 +94,21 @@ def count_os(fichier: str):
         print(line[-2])
 
 
-def get_data(liste: list, data: str) -> list:
+def get_data(liste: list, data: list) -> list:
     data_dic = {"ip": 0, "date": 1, "http_code": 2, "browser": 4, "system": 3}
-    index = data_dic[data]
+    index = []
+    for i in data:
+        index.append(data_dic[i])
+
     tab = []
+    n = len(index)
     for line in liste:
-        tab.append(line[index])
+        if n > 1:
+            tab.append([])
+            for i in index:
+                tab[-1].append(line[i])
+        else:
+            tab.append(line[index[0]])
     return tab
 
 def print_tab(liste: list) -> None:
@@ -109,3 +118,15 @@ def print_tab(liste: list) -> None:
             print(" ".join(line))
         else:
             print(line)
+
+def browser_stat(browser_list: list) -> dict:
+    dic = {"Edge": {}, "Chrome": {}, "Safari": {}, "Firefox": {}, "Opera": {}}
+    for i in browser_list:
+        if i != "Unknown Browser" and i != "Robot":
+            [browser, version] = i.split("/")
+            dic[browser]["total"] = dic[browser].get("total", 0)+1
+            dic[browser][version] = dic[browser].get(version, 0)+1
+    return dic
+
+if __name__ == "__main__":
+    #exportToJSONFile(browser_stat(get_data(parse("apache.log", True, False), ["browser"])), "browser.json")
