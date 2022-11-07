@@ -128,5 +128,7 @@ def browser_stat(browser_list: list) -> dict:
             dic[browser][version] = dic[browser].get(version, 0)+1
     return dic
 
+"""
 if __name__ == "__main__":
-    #exportToJSONFile(browser_stat(get_data(parse("apache.log", True, False), ["browser"])), "browser.json")
+    exportToJSONFile(browser_stat(get_data(parse("apache.log", True, False), ["browser"])), "browser.json")
+"""
