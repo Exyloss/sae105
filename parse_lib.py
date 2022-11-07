@@ -8,7 +8,6 @@ from export_file import *
 
 def parse(file: str, filter_bot: bool = False, uniq: bool = False) -> list:
     lines = open(file, 'r').readlines()
-    # Nom des colonnes pour exporter le tableau
     tab = []
     ip_list = []
     for line in lines:
@@ -25,7 +24,7 @@ def parse(file: str, filter_bot: bool = False, uniq: bool = False) -> list:
                 systeme = re.findall("\(.*?\)", line)[0]
             except:
                 systeme = "Unknown OS"
-            if filter_bot == False or browser != "Robot":
+            if filter_bot == False or (browser != "Robot" and "http" not in systeme):
                 tab.append([ip, date, exit_code, systeme, browser])
     return tab
 
@@ -115,7 +114,7 @@ def print_tab(liste: list) -> None:
     is_tab = isinstance(liste[0], list)
     for line in liste:
         if is_tab:
-            print(" ".join(line))
+            print("|".join(line))
         else:
             print(line)
 
@@ -128,7 +127,47 @@ def browser_stat(browser_list: list) -> dict:
             dic[browser][version] = dic[browser].get(version, 0)+1
     return dic
 
+def system_stat(system_list: list) -> dict:
+    dic = {"iPhone": {}, "Android": {}, "Macintosh": {}, "Windows": {}, "Linux": {}}
+    for i in system_list:
+        if i != "Unknown OS":
+            if "Android" in i:
+                system = "Android"
+                try:
+                    version = re.findall("Android \d{1,2}", i)[0].split(" ")[1]
+                except:
+                    version = "Unknown"
+            elif "Linux" in i:
+                system = "Linux"
+                version = "erreur"
+            elif "Windows" in i:
+                system = "Windows"
+                try:
+                    version = re.findall("Windows NT .*?;", i)[0].split(" ")[-1].split(";")[0]
+                except:
+                    version = "Unknown"
+            elif "iPhone" in i:
+                system = "iPhone"
+                try:
+                    version = re.findall("iPhone OS \d{1,2}", i)[0].split(" ")[-1]
+                except:
+                    version = "Unknown"
+            elif "Macintosh" in i:
+                system = "Macintosh"
+                try:
+                    version = re.findall("Mac OS X \d{1,2}", i)[0].split(" ")[-1]
+                except:
+                    version = "Unknown"
+
+
+            dic[system]["total"] = dic[system].get("total", 0)+1
+            if version != "erreur":
+                dic[system][version] = dic[system].get(version, 0)+1
+
+    return dic
+
 """
 if __name__ == "__main__":
-    exportToJSONFile(browser_stat(get_data(parse("apache.log", True, False), ["browser"])), "browser.json")
+    #exportToJSONFile(browser_stat(get_data(parse("apache.log", True, False), ["browser"])), "browser.json")
+    #exportToJSONFile(system_stat(get_data(parse("apache.log", True, True), ["system"])), "system.json")
 """
