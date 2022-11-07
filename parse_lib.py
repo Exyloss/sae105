@@ -78,21 +78,6 @@ def ip_coord(tab, a, b):
     exportToCSVFile(coords, "ip.csv", "a")
     return coords
 
-def count_browser(fichier: str):
-    values = parse(fichier)
-    dic = {}
-    for line in values:
-        browser = line[-1].split("/")[0]
-        dic[browser] = dic.get(browser, 0)+1
-    return dic
-
-def count_os(fichier: str):
-    values = parse(fichier)
-    dic = {}
-    for line in values:
-        print(line[-2])
-
-
 def get_data(liste: list, data: list) -> list:
     data_dic = {"ip": 0, "date": 1, "http_code": 2, "browser": 4, "system": 3}
     index = []
