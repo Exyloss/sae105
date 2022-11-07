@@ -6,24 +6,27 @@ import json
 from time import sleep
 from export_file import *
 
-def parse(file: str, filter_bot: bool = False) -> list:
+def parse(file: str, filter_bot: bool = False, uniq: bool = False) -> list:
     lines = open(file, 'r').readlines()
     # Nom des colonnes pour exporter le tableau
     tab = []
+    ip_list = []
     for line in lines:
         ip = line.split(" ")[0]
-        # Première valeur entre crochets
-        date = re.findall(r"\[.*?\]", line)[0]
-        # On récupère le premier nombre à trois chiffres de la ligne
-        exit_code = re.findall(" [0-9]{3} ", line)[0][1:-1]
-        # Dernière valeur entre double quillemets
-        browser = get_browser(line)
-        try:
-            systeme = re.findall("\(.*?\)", line)[0]
-        except:
-            systeme = "Unknown OS"
-        if filter_bot == False or browser != "Robot":
-            tab.append([ip, date, exit_code, systeme, browser])
+        if not uniq or ip not in ip_list:
+            ip_list.append(ip)
+            # Première valeur entre crochets
+            date = re.findall(r"\[.*?\]", line)[0]
+            # On récupère le premier nombre à trois chiffres de la ligne
+            exit_code = re.findall(" [0-9]{3} ", line)[0][1:-1]
+            # Dernière valeur entre double quillemets
+            browser = get_browser(line)
+            try:
+                systeme = re.findall("\(.*?\)", line)[0]
+            except:
+                systeme = "Unknown OS"
+            if filter_bot == False or browser != "Robot":
+                tab.append([ip, date, exit_code, systeme, browser])
     return tab
 
 def get_browser(line) -> str:

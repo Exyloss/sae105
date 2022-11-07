@@ -10,7 +10,7 @@ parser.add_argument('-o', '--output', help="fichier de sortie")
 parser.add_argument('-t', '--type', help="type de données du fichier de sortie, valeurs possibles: json, csv, xml")
 parser.add_argument('-g', '--get', help="Obtenir une certaine entrée, valeurs possibles: ip, date, http_code, browser, system")
 parser.add_argument('-f', '--filter', help="Filtrer les robots", action='store_true')
-parser.add_argument('-u', '--uniq', help="Faire que chaque valeur soit unique", action='store_true')
+parser.add_argument('-u', '--uniq', help="Faire que chaque adresse IP soit unique", action='store_true')
 
 args = parser.parse_args()
 
@@ -32,7 +32,7 @@ if args.get not in ["ip", "date", "http_code", "browser", "system"] and args.get
     print("Erreur, la valeur "+args.get+" n'existe pas.")
     exit(1)
 
-values = parse(args.log_file, args.filter)
+values = parse(args.log_file, args.filter, args.uniq)
 
 if args.get != None:
     values_get = get_data(values, args.get)
