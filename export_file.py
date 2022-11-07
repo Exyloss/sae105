@@ -1,9 +1,9 @@
 import json
 import csv
 
-def exportToCSVFile(liste: list, fichier: str, mode: str) -> bool:
+def exportToCSVFile(liste: list, fichier: str) -> bool:
     try:
-        with open(fichier, mode) as f:
+        with open(fichier, "w") as f:
             writer = csv.writer(f, delimiter=',')
             for line in liste:
                 writer.writerow(line)

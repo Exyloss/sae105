@@ -39,4 +39,13 @@ if args.get != None:
 else:
     values_get = values
 
-print_tab(values_get)
+if args.output == None:
+    print_tab(values_get)
+else:
+    if args.type == "json":
+        exportToJSONFile(values_get, args.output)
+    elif args.type == "csv":
+        exportToCSVFile(values_get, args.output)
+    else:
+        exportToXMLFile(values_get, args.output)
+
