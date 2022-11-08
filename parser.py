@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from os.path import exists
 from parse_lib import *
 from export_file import *
