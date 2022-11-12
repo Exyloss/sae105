@@ -75,7 +75,7 @@ def ip_coord(tab, a, b):
             sleep(1.5)
         else:
             print("erreur")
-    exportToCSVFile(coords, "ip.csv", "a")
+    exportToCSVFile(coords, "ip.csv")
     return coords
 
 def ip_infos(tab):
