@@ -21,9 +21,9 @@ def parse(file: str, filter_bot: bool = False, uniq: bool = False) -> list:
             # Dernière valeur entre double quillemets
             browser = get_browser(line)
             try:
-                systeme = re.findall("\(.*?\)", line)[0]
+                systeme = get_system(re.findall("\(.*?\)", line)[0])
             except:
-                systeme = "Unknown OS"
+                systeme = "Unknown"
             if filter_bot == False or (browser != "Robot" and "http" not in systeme):
                 tab.append([ip, date, exit_code, systeme, browser])
     return tab
@@ -46,6 +46,23 @@ def get_browser(line) -> str:
     else:
         return "Unknown Browser"
     return re.findall(browser+'\/.*?(?:"| )', user_agent)[0][:-1]
+
+def get_system(i) -> str:
+    try:
+        if "Android" in i:
+            return "Android "+re.findall("Android \d{1,2}", i)[0].split(" ")[1]
+        elif "Linux" in i:
+            return "Linux"
+        elif "Windows" in i:
+            return "Windows NT "+re.findall("Windows NT .*?;", i)[0].split(" ")[-1].split(";")[0]
+        elif "iPhone" in i:
+            return "iPhone "+re.findall("iPhone OS \d{1,2}", i)[0].split(" ")[-1]
+        elif "Macintosh" in i:
+            return "Macintosh "+re.findall("Mac OS X \d{1,2}", i)[0].split(" ")[-1]
+        else:
+            return "Unknown"
+    except:
+        return "Unknown"
 
 def getIP_infos(ip: str) -> dict:
     url = "http://ip-api.com/json/"
@@ -128,44 +145,35 @@ def browser_stat(browser_list: list) -> dict:
     return dic
 
 def system_stat(system_list: list) -> dict:
-    dic = {"iPhone": {}, "Android": {}, "Macintosh": {}, "Windows": {}, "Linux": {}}
+    dic = {"iPhone": {}, "Android": {}, "Macintosh": {}, "Windows NT": {}, "Linux": {}, "Unknown": {}}
     for i in system_list:
-        if i != "Unknown OS":
+        try:
             if "Android" in i:
                 system = "Android"
-                try:
-                    version = re.findall("Android \d{1,2}", i)[0].split(" ")[1]
-                except:
-                    version = "Unknown"
+                version = re.findall("Android \d{1,2}", i)[0].split(" ")[1]
             elif "Linux" in i:
                 system = "Linux"
                 version = "erreur"
             elif "Windows" in i:
-                system = "Windows"
-                try:
-                    version = re.findall("Windows NT .*?;", i)[0].split(" ")[-1].split(";")[0]
-                except:
-                    version = "Unknown"
+                system = "Windows NT"
+                version = re.findall("Windows NT .*?;", i)[0].split(" ")[-1].split(";")[0]
             elif "iPhone" in i:
                 system = "iPhone"
-                try:
-                    version = re.findall("iPhone OS \d{1,2}", i)[0].split(" ")[-1]
-                except:
-                    version = "Unknown"
+                version = re.findall("iPhone OS \d{1,2}", i)[0].split(" ")[-1]
             elif "Macintosh" in i:
                 system = "Macintosh"
-                try:
-                    version = re.findall("Mac OS X \d{1,2}", i)[0].split(" ")[-1]
-                except:
-                    version = "Unknown"
+                version = re.findall("Mac OS X \d{1,2}", i)[0].split(" ")[-1]
             else:
                 continue
+        except:
+            system = "Unknown"
 
-            dic[system]["total"] = dic[system].get("total", 0)+1
-            if version != "erreur":
-                dic[system][version] = dic[system].get(version, 0)+1
+        dic[system]["total"] = dic[system].get("total", 0)+1
+        if version != "erreur":
+            dic[system][version] = dic[system].get(version, 0)+1
 
     return dic
 
 if __name__ == "__main__":
-    print(None)
+    system = "(Windows NT 6.1; Win64; x64)"
+    print(get_system(system))

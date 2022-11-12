@@ -7,6 +7,7 @@ def exportToCSVFile(liste: list, fichier: str) -> bool:
     try:
         with open(fichier, "w") as f:
             writer = csv.writer(f, delimiter=',')
+            writer.writerow(['ip', 'date', 'http_code', 'system', 'browser'])
             for line in liste:
                 writer.writerow(line)
         return True
