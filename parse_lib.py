@@ -158,7 +158,8 @@ def system_stat(system_list: list) -> dict:
                     version = re.findall("Mac OS X \d{1,2}", i)[0].split(" ")[-1]
                 except:
                     version = "Unknown"
-
+            else:
+                continue
 
             dic[system]["total"] = dic[system].get("total", 0)+1
             if version != "erreur":
