@@ -8,12 +8,13 @@ def get_hour(liste: list) -> list:
         heures.append(int(i.split(":")[1:2][0]))
     return heures
 
-f = open('heure.json')
+f = open('http.json')
 
 data = json.load(f)
 
 f.close()
 
+"""
 heure = get_hour(data)
 
 nb_heures = {}
@@ -25,21 +26,20 @@ df = p.DataFrame({'heures': nb_heures.keys(), 'Nombre de connections': nb_heures
 
 df.plot.bar(x='heures', y='Nombre de connections')
 
-pyp.show()
-
 """
-keys = []
-values = []
 
-for i in data.keys():
-    keys.append(i)
-    values.append(data[i]["total"])
+dic = {}
+
+for i in data:
+    dic[i] = dic.get(i, 0)+1
+
 
 pyp.figure(figsize=(8,8))
 
-pyp.pie(values, labels=keys, normalize=True)
+pyp.pie(dic.values(), labels=dic.keys(), normalize=True)
 
 pyp.legend()
 
+
+
 pyp.show()
-"""

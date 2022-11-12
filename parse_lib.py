@@ -75,7 +75,7 @@ def ip_coord(tab, a, b):
             sleep(1.5)
         else:
             print("erreur")
-    exportToCSVFile(coords, "ip.csv", "a")
+    exportToCSVFile(coords, "ip.csv")
     return coords
 
 def get_data(liste: list, data: list) -> list:
@@ -143,6 +143,8 @@ def system_stat(system_list: list) -> dict:
                     version = re.findall("Mac OS X \d{1,2}", i)[0].split(" ")[-1]
                 except:
                     version = "Unknown"
+            else:
+                continue
 
 
             dic[system]["total"] = dic[system].get("total", 0)+1
@@ -151,8 +153,3 @@ def system_stat(system_list: list) -> dict:
 
     return dic
 
-"""
-if __name__ == "__main__":
-    #exportToJSONFile(browser_stat(get_data(parse("apache.log", True, False), ["browser"])), "browser.json")
-    #exportToJSONFile(system_stat(get_data(parse("apache.log", True, True), ["system"])), "system.json")
-"""
