@@ -243,3 +243,26 @@ def get_data(liste: list, data: list) -> list:
             tab.append(line[index[0]])
     return tab
 ```
+
+Cette fonction conserve seulement les données demandées par l'utilisateur du programme en ligne de commande. liste est la liste générée par la fonction
+parse et data est la liste des données voulues par l'utilisateur. index est un tableau contenant l'index des valeurs voulues par l'utilisateur dans liste.
+Le tableau liste est parcourut et les données présentes aux index présents dans le tableau index sont insérées dans les sous-tableaux du tableau tab qui
+est enfin retourné.
+
+6. Fonction print_tab :
+
+```python
+def print_tab(liste: list) -> None:
+    is_tab = isinstance(liste[0], list)
+    for line in liste:
+        if is_tab:
+            print("|".join(line))
+        else:
+            print(line)
+```
+
+Cette fonction affiche les données d'un tableau à deux dimension en séparant les colonnes par un tube.
+
+7. Les fonctions browser_stat et system_stat :
+
+Ces fonctions listent les navigateurs ou systèmes d'exploitation et leurs versions avec leurs nombres d'apparition dans le tableau renseigné en paramètre.
