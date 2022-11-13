@@ -71,6 +71,7 @@ def getIP_infos(ip: str) -> dict:
     values = json.loads(data)
     return values
 
+"""
 def ip_coord(tab, a, b):
     url = "http://ip-api.com/json/"
     coords = []
@@ -85,6 +86,7 @@ def ip_coord(tab, a, b):
             print("erreur")
     exportToCSVFile(coords, "ip.csv")
     return coords
+"""
 
 def ip_infos(tab):
     url = "http://ip-api.com/json/"

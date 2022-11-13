@@ -198,4 +198,48 @@ def get_system(line) -> str:
         return "Unknown"
 ```
 
-Cette fonction
+Cette fonction retourne le nom du système d'exploitation du client et sa version séparés par un espace. Pour obtenir la version, nous avons utilisé une autre regex,
+celle-ci détecte les entiers de un ou deux chiffres présents après le nom du système d'exploitation.
+
+4. Fonction ip_infos :
+
+```python
+def ip_infos(tab):
+    url = "http://ip-api.com/json/"
+    values = []
+    for i in range(len(tab)):
+        ip = tab[i]
+        infos = getIP_infos(ip)
+        if infos['status'] == 'success':
+            values.append({'ip': ip, 'country': infos['country'], 'isp': infos['isp'], 'lat': infos['lat'], 'lon': infos['lon']})
+            print(i)
+            sleep(1.1)
+        else:
+            print("erreur")
+    exportToJSONFile(values, "infos.json")
+    return values
+```
+
+Cette fonction sert à lire les informations de l'adresse IP telles que la position de celle-ci, son pays, et son fournisseur d'accès internet. Elle
+a notamment servit à réaliser l'histogramme des nationalités et la carte des IP.
+
+5. Fonction get_data :
+
+```python
+def get_data(liste: list, data: list) -> list:
+    data_dic = {"ip": 0, "date": 1, "http_code": 2, "browser": 4, "system": 3}
+    index = []
+    for i in data:
+        index.append(data_dic[i])
+
+    tab = []
+    n = len(index)
+    for line in liste:
+        if n > 1:
+            tab.append([])
+            for i in index:
+                tab[-1].append(line[i])
+        else:
+            tab.append(line[index[0]])
+    return tab
+```
