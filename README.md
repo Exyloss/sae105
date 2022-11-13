@@ -10,6 +10,7 @@
 4. Utilisation de [ip-api.com](https://ip-api.com)
 5. Création des statistiques
 6. Génération de la carte
+7. Annexe
 
 ---
 
@@ -51,7 +52,7 @@ un certain pattern. Par exemple, pour la date, la regex suivante permet de récu
 avons utilisé :
 
 - "\\[.\*?\\]" pour la date
-- " [0-9]{3} " pour le code HTTP, une valeur à trois chiffres entourés par des espaces
+- " [0-9]{3} " pour le code HTTP, une chaîne de trois chiffres entourée par des espaces
 - "\\(.\*?\\)" pour le système d'exploitation, une valeur entre parenthèses
 - browser+'\\/.\*?(?:"| )' pour le navigateur, browser est son nom mais le regex renvoie nom/version
 - pour obtenir une version simplifiée de l'OS, on récupère le nom de l'OS, puis pour la version on utilise par exemple ce regex : "Android \\d{1,2}"
@@ -89,6 +90,8 @@ def getIP_infos(ip: str) -> dict:
 
 # 5. Création des statistiques
 
+Les statistiques ont été réalisées avec matplotlib.pyplot pour les camemberts et pandoc pour les histogrammes, les graphiques générés sont visionables dans le répertoire img/
+
 # 6. Génération de la carte
 
 Afin de générer la carte des visiteurs, nous avons utilisé la librairie python «folium» :
@@ -116,3 +119,83 @@ Enfin, nous pouvons sauvegarder cette carte avec la méthode save de l'objet Map
 ```python
 m.save("index.html")
 ```
+
+# 7. Annexe
+
+1. Fonction parse :
+
+```python
+def parse(file: str, filter_bot: bool = False, uniq: bool = False) -> list:
+    lines = open(file, 'r').readlines()
+    tab = []
+    ip_list = []
+    for line in lines:
+        ip = line.split(" ")[0]
+        if not uniq or ip not in ip_list:
+            ip_list.append(ip)
+            date = re.findall(r"\[.*?\]", line)[0]
+            exit_code = re.findall(" [0-9]{3} ", line)[0][1:-1]
+            browser = get_browser(line)
+            try:
+                systeme = get_system(re.findall("\(.*?\)", line)[0])
+            except:
+                systeme = "Unknown"
+            if filter_bot == False or (browser != "Robot" and "http" not in systeme):
+                tab.append([ip, date, exit_code, systeme, browser])
+    return tab
+```
+
+cette fonction retourne un tableau à deux dimensions contenant les données suivantes de gauche à droite : ip, date, code HTTP, système d'exploitation, navigateur.
+Pour obtenir les données recherchées, elle utilise une regex par valeur puis ajoute le tableau de ces valeurs à la fin du tableau principal. Les paramètres
+filter_bot et uniq permettent respectivement de retirer les bots ou de faire que chaque IP soit unique dans le tableau retourné.
+
+2. Fonction get_browser :
+
+```python
+def get_browser(line) -> str:
+    user_agent = re.findall('".*?"', line)[-1]
+    # ~~ Les joies de Python ~~ #
+    if "bot" in user_agent or "Bot" in user_agent:
+        return "Robot"
+    elif "Edge/" in user_agent:
+        browser = "Edge"
+    elif "Firefox/" in user_agent:
+        browser = "Firefox"
+    elif "Chrome/" in user_agent:
+        browser = "Chrome"
+    elif "Safari/" in user_agent:
+        browser = "Safari"
+    elif "Opera/" in user_agent:
+        browser = "Opera"
+    else:
+        return "Unknown Browser"
+    return re.findall(browser+'\/.*?(?:"| )', user_agent)[0][:-1]
+```
+
+Cette fonction retourne le nom du navigateur et sa version séparés par un "/". Le paramètre de cette fonction est une ligne du fichier de log apache.
+Tout d'abord, la fonction sépare le user-agent (c'est-à-dire les informations sur les logiciels du client) afin de rechercher le navigateur du client.
+Pour ce faire, on vérifie si le nom de chaque navigateur populaire est présent dans le user-agent. s'il y est, on assigne son nom à la variable browser.
+Puis, si le navigateur est reconnu, on retourne le navigateur et sa version à l'aide d'une regex.
+
+3. Fonction get_system :
+
+```python
+def get_system(line) -> str:
+    try:
+        if "Android" in line:
+            return "Android "+re.findall(r"Android \d{1,2}", line)[0].split(" ")[1]
+        elif "Linux" in line:
+            return "Linux"
+        elif "Windows" in line:
+            return "Windows NT "+re.findall(r"Windows NT .*?;", line)[0].split(" ")[-1].split(";")[0]
+        elif "iPhone" in line:
+            return "iPhone "+re.findall(r"iPhone OS \d{1,2}", line)[0].split(" ")[-1]
+        elif "Macintosh" in line:
+            return "Macintosh "+re.findall(r"Mac OS X \d{1,2}", line)[0].split(" ")[-1]
+        else:
+            return "Unknown"
+    except:
+        return "Unknown"
+```
+
+Cette fonction

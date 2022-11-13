@@ -21,7 +21,7 @@ def parse(file: str, filter_bot: bool = False, uniq: bool = False) -> list:
             # Dernière valeur entre double quillemets
             browser = get_browser(line)
             try:
-                systeme = get_system(re.findall("\(.*?\)", line)[0])
+                systeme = get_system(re.findall(r"\(.*?\)", line)[0])
             except:
                 systeme = "Unknown"
             if filter_bot == False or (browser != "Robot" and "http" not in systeme):
@@ -47,18 +47,18 @@ def get_browser(line) -> str:
         return "Unknown Browser"
     return re.findall(browser+'\/.*?(?:"| )', user_agent)[0][:-1]
 
-def get_system(i) -> str:
+def get_system(line) -> str:
     try:
-        if "Android" in i:
-            return "Android "+re.findall("Android \d{1,2}", i)[0].split(" ")[1]
-        elif "Linux" in i:
+        if "Android" in line:
+            return "Android "+re.findall(r"Android \d{1,2}", line)[0].split(" ")[1]
+        elif "Linux" in line:
             return "Linux"
-        elif "Windows" in i:
-            return "Windows NT "+re.findall("Windows NT .*?;", i)[0].split(" ")[-1].split(";")[0]
-        elif "iPhone" in i:
-            return "iPhone "+re.findall("iPhone OS \d{1,2}", i)[0].split(" ")[-1]
-        elif "Macintosh" in i:
-            return "Macintosh "+re.findall("Mac OS X \d{1,2}", i)[0].split(" ")[-1]
+        elif "Windows" in line:
+            return "Windows NT "+re.findall(r"Windows NT .*?;", line)[0].split(" ")[-1].split(";")[0]
+        elif "iPhone" in line:
+            return "iPhone "+re.findall(r"iPhone OS \d{1,2}", line)[0].split(" ")[-1]
+        elif "Macintosh" in line:
+            return "Macintosh "+re.findall(r"Mac OS X \d{1,2}", line)[0].split(" ")[-1]
         else:
             return "Unknown"
     except:
@@ -70,15 +70,6 @@ def getIP_infos(ip: str) -> dict:
     data = response.content
     values = json.loads(data)
     return values
-
-def list_ip(file):
-    listip = []
-    f = open(file, "r")
-    for ligne in f :
-        a=ligne.split(" ")[0]
-        if a not in listip:
-            listip.append(a)
-    return listip
 
 def ip_coord(tab, a, b):
     url = "http://ip-api.com/json/"
@@ -167,6 +158,7 @@ def system_stat(system_list: list) -> dict:
                 continue
         except:
             system = "Unknown"
+            version = "erreur"
 
         dic[system]["total"] = dic[system].get("total", 0)+1
         if version != "erreur":
