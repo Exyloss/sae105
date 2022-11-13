@@ -73,6 +73,20 @@ En lançant cette commande, nous pouvons voir les données renvoyées par l'API.
 fields de la requête. Ici, le serveur renverra le statut de la requête (si elle a réussi ou échoué), la latitude et la longitude
 de la position de l'adresse IP renseignée.
 
+Alors, nous avons transcrit cette requête en python :
+
+```python
+import requests
+import json
+
+def getIP_infos(ip: str) -> dict:
+    url = "http://ip-api.com/json/"
+    response = requests.get(url+ip)
+    data = response.content
+    values = json.loads(data)
+    return values
+```
+
 # 5. Création des statistiques
 
 # 6. Génération de la carte
