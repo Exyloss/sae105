@@ -40,7 +40,17 @@ Firefox.
 
 # 2. Structures python utilisées
 
+Pour organiser les données parcourues, nous utilisons un tableau à deux dimensions. Les sous-tableaux peuvent contenir les données
+renseignées par l'utilisateur, c'est-à-dire l'ip, la date, le système d'exploitation ou le navigateur. Ces données sont ensuite transcrites dans un fichier
+csv/json/xml.
+
 # 3. Fonctionnement de l'analyse du journal apache
+
+Pour analyser le fichier de log apache, nous avons utilisé dans regular expressions (ou regex). Ces regex nous permettent d'obtenir une chaîne de caractère qui respècte
+un certain pattern. Par exemple, pour la date, la regex suivante permet de récupérer les valeurs entre crochets : "\[.*?\]". Voici les différentes regex que nous
+avons utilisé :
+
+    - "\[.*?\]" pour la date
 
 # 4. Utilisation de [ip-api.com](https://ip-api.com)
 
