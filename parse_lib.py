@@ -25,7 +25,7 @@ def parse(file: str, filter_bot: bool = False, uniq: bool = False) -> list:
             except:
                 systeme = "Unknown"
             if filter_bot == False or (browser != "Robot" and "http" not in systeme):
-                tab.append([ip, date, exit_code, systeme, browser])
+                tab.append({'ip': ip, 'date': date, 'http_code': exit_code, 'system': systeme, 'browser': browser})
     return tab
 
 def get_browser(line) -> str:
@@ -104,27 +104,19 @@ def ip_infos(tab):
     return values
 
 def get_data(liste: list, data: list) -> list:
-    data_dic = {"ip": 0, "date": 1, "http_code": 2, "browser": 4, "system": 3}
-    index = []
-    for i in data:
-        index.append(data_dic[i])
 
     tab = []
-    n = len(index)
     for line in liste:
-        if n > 1:
-            tab.append([])
-            for i in index:
-                tab[-1].append(line[i])
-        else:
-            tab.append(line[index[0]])
+        tab.append({})
+        for i in data:
+            tab[-1][i] = line[i]
     return tab
 
 def print_tab(liste: list) -> None:
-    is_tab = isinstance(liste[0], list)
+    is_dic = isinstance(liste[0], dict)
     for line in liste:
-        if is_tab:
-            print("|".join(line))
+        if is_dic:
+            print("|".join([i for i in line.values()]))
         else:
             print(line)
 
