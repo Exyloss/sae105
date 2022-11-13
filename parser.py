@@ -27,7 +27,7 @@ if args.output != None and exists(args.output):
         exit(1)
 
 if args.output != None and args.type not in ["csv", "json", "xml"]:
-    print("Erreur, le type de fichier "+args.type+" n'existe pas.")
+    print("Erreur, le type de fichier "+str(args.type)+" n'existe pas.")
     exit(1)
 
 
