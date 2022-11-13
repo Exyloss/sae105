@@ -47,10 +47,14 @@ csv/json/xml.
 # 3. Fonctionnement de l'analyse du journal apache
 
 Pour analyser le fichier de log apache, nous avons utilisé dans regular expressions (ou regex). Ces regex nous permettent d'obtenir une chaîne de caractère qui respècte
-un certain pattern. Par exemple, pour la date, la regex suivante permet de récupérer les valeurs entre crochets : "\[.*?\]". Voici les différentes regex que nous
+un certain pattern. Par exemple, pour la date, la regex suivante permet de récupérer les valeurs entre crochets : "\\[.\*?\\]". Voici les différentes regex que nous
 avons utilisé :
 
-    - "\[.*?\]" pour la date
+- "\\[.\*?\\]" pour la date
+- " [0-9]{3} " pour le code HTTP, une valeur à trois chiffres entourés par des espaces
+- "\\(.\*?\\)" pour le système d'exploitation, une valeur entre parenthèses
+- browser+'\\/.\*?(?:"| )' pour le navigateur, browser est son nom mais le regex renvoie nom/version
+- pour obtenir une version simplifiée de l'OS, on récupère le nom de l'OS, puis pour la version on utilise par exemple ce regex : "Android \\d{1,2}"
 
 # 4. Utilisation de [ip-api.com](https://ip-api.com)
 
